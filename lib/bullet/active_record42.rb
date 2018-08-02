@@ -39,14 +39,13 @@ module Bullet
         end
       })
 
-      ::ActiveRecord::Persistence.class_eval do
-        def _create_record_with_bullet(*args)
-          _create_record_without_bullet(*args).tap do
+      ::ActiveRecord::Persistence.prepend(Module.new {
+        def _create_record(*args)
+          super.tap do
             Bullet::Detector::NPlusOneQuery.add_impossible_object(self)
           end
         end
-        alias_method_chain :_create_record, :bullet
-      end
+      })
 
       ::ActiveRecord::Relation.prepend(Module.new {
         # if select a collection of objects, then these objects have possible to cause N+1 query.
