@@ -10,7 +10,7 @@ class Object
       self.class.primary_keys.map { |primary_key| send primary_key }.join(','.freeze)
     elsif self.class.respond_to?(:primary_key) && self.class.primary_key
       send self.class.primary_key
-    else
+    elsif self.respond_to?(:id)
       id
     end
   end
